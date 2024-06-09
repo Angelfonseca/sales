@@ -1,0 +1,15 @@
+<input type="text" [(ngModel)]="email" placeholder="Serach any fields"/>
+
+<table border="1" width="100%">
+  <tr>
+    <th>No.</th>
+    <th>Id</th>
+    <th>Email</th>
+  </tr>
+  <tr *ngFor="let customer of users | customerEmailFilter:email;let i = index">
+    <th scope="row">{{i+1}}</th>
+    <td>{{customer.id}}</td>
+    <td>{{customer.email}}</td>
+  </tr>
+
+</table>
