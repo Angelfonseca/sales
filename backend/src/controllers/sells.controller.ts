@@ -93,4 +93,14 @@ const getAvailableSells = async (req: Request, res: Response) => {
     }
 }
 
-export default { createSell, getSells, getSellById, updateSell, deleteSell, getSellsByUser, getReturnedSells, getLoanedSells, getAvailableSells };
+const returnSell = async (req: Request, res: Response) => {
+    try {
+        const id: string = req.params.id;
+        await sellsService.returnSell(id);
+        res.status(200).json({ message: 'Sell returned' });
+    } catch (error: any) {
+        handleHttp(res, 500, error.message);
+    }
+}
+
+export default { createSell, getSells, getSellById, updateSell, deleteSell, getSellsByUser, getReturnedSells, getLoanedSells, getAvailableSells, returnSell };

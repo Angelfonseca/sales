@@ -1,13 +1,12 @@
 import { Document } from 'mongoose';
 import { User } from './users.interface';
+import { Dress } from './dresses.interface';
 
 export interface Sell extends Document {
     user: User;
-    name: string;
+    dress: Dress;
     folio: number;
-    price: number;
-    description: string;
+    recipient: string;
     loanDate: Date;
     returnDate: Date;
-    available: boolean;
 }

@@ -3,6 +3,7 @@ import dbConnect from './config/db';
 import cors from 'cors';
 import usersRoutes from './routes/users.routes';
 import sellsRoutes from './routes/sells.routes';
+import dressesRoutes from './routes/dresses.routes';
 import 'dotenv/config';
 
 
@@ -14,6 +15,7 @@ app.use(express.json());
 app.use('/', express.static('public'));
 app.use('/api/users', usersRoutes);
 app.use('/api/sells', sellsRoutes);
+app.use('/api/dresses', dressesRoutes);
 
 
 

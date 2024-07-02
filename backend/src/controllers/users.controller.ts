@@ -2,6 +2,7 @@ import userServices from '../services/users.service';
 import { Request, Response } from 'express';
 import { User } from '../interfaces/users.interface';
 import { handleHttp } from '../utils/error.handle';
+import jwtService from '../utils/jwt.utils';
 
 const createUser = async (req: Request, res: Response) => {
     try {
@@ -21,6 +22,23 @@ const getUsers = async (req: Request, res: Response) => {
         handleHttp(res, 500, error.message);
     }
 };
+const login = async (req: Request, res: Response) => {
+    try {
+        const credentials = req.body;
+        const result = await userServices.login(credentials);
+  
+        if (result.error) {
+            return res.status(400).json({ message: result.message });
+        }
+  
+        const token = await jwtService.createToken(result.user);
+        return res.status(200).json({ user: result.user, token });
+  
+    } catch (error) {
+        console.error('Error in loginController:', error);
+        return res.status(500).json({ message: 'INTERNAL SERVER ERROR' });
+    }
+  };
 
 const getUserById = async (req: Request, res: Response) => {
     try {
@@ -64,4 +82,4 @@ const addSell = async (req: Request, res: Response) => {
     }
 };
 
-export default { createUser, getUsers, getUserById, updateUser, deleteUser, addSell }
+export default { createUser, getUsers, getUserById, updateUser, deleteUser, addSell, login }
