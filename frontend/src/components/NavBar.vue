@@ -7,28 +7,33 @@
       </a>
       <div class="w-full md:w-auto">
         <ul class="font-medium flex flex-col md:flex-row md:space-x-4">
-          <li class="opcion-nav">
-            <router-link to="/" class="text-white hover:text-blue-700">
+          <li class="opcion-nav" v-if="route.path !== '/'">
+            <router-link to="/" class="nav-link">
               <i class="fas fa-home"></i> Catálogo
             </router-link>
           </li>
-          <li class="opcion-nav" v-if="user && (user.role === 'admin' || user.role === 'user')">
-            <router-link to="/rents" class="text-white hover:text-blue-700">
-              <i class="fas fa-shopping-cart"></i> {{ user.role === 'admin' ? 'Rentas' : 'Mis Rentas' }}
+          <li class="opcion-nav" v-if="user && (user.role === 'admin' || user.role === 'user') && route.path !== '/rents'">
+            <router-link to="/rents" class="nav-link">
+              <i class="fas fa-shopping-cart"></i> {{ user.role === 'admin' ? 'Rentas' : 'Rentas' }}
             </router-link>
           </li>
-          <li class="opcion-nav" v-if="user && (user.role === 'admin' || user.role === 'admin')">
-            <router-link to="/adding" class="text-white hover:text-blue-700">
+          <li class="opcion-nav" v-if="user && (user.role === 'admin' || user.role === 'user') && route.path !== '/adding'">
+            <router-link to="/adding" class="nav-link">
               <i class="fas fa-plus"></i> Agregar vestido
             </router-link>
           </li>
-          <li class="opcion-nav">
-            <router-link to="/about" class="text-white hover:text-blue-700">
+          <li class="opcion-nav" v-if="route.path !== '/about'">
+            <router-link to="/about" class="nav-link">
               <i class="fas fa-envelope"></i> Contacto
             </router-link>
           </li>
+          <li class="opcion-nav" v-if="user && (user.role === 'admin' || user.role === 'user') && route.path !== '/selling'">
+            <router-link to="/selling" class="nav-link">
+              <i class="fas fa-envelope"></i> Rentar
+            </router-link>
+          </li>
           <li class="opcion-nav" v-if="user">
-            <a @click="logout" href="#" class="text-white hover:text-blue-700">
+            <a @click="logout" href="#" class="nav-link">
               Cerrar sesión
             </a>
           </li>
@@ -38,12 +43,12 @@
   </nav>
 </template>
 
-
 <script setup>
 import { ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 
 const router = useRouter();
+const route = useRoute();
 const user = ref(null);
 
 if (localStorage.getItem('user')) {
@@ -69,5 +74,12 @@ const logout = () => {
 }
 #navbar {
   background-color: #313131;
+}
+.nav-link {
+  color: white;
+  text-decoration: none;
+}
+.nav-link:hover {
+  color: #1e90ff;
 }
 </style>

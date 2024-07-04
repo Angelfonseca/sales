@@ -20,18 +20,15 @@
                 <div class="form-group"> <label for="category">Categoría:</label> <select id="category"
                         v-model="dress.category" required>
                         <option value="Fiesta">Fiesta</option>
-                        <option value="Formal">Formal</option>
                     </select> </div>
-                <div class="form-group"> <label for="available">Disponible:</label> <select id="available"
-                        v-model="dress.available" required>
-                        <option value="true">Sí</option>
-                        <option value="false">No</option>
-                    </select> </div> <button type="submit" class="submit-button">Añadir Vestido</button>
+                <button type="submit" class="submit-button">Añadir Vestido</button>
             </form>
         </main>
     </BaseLayout>
 </template>
-<script setup>import BaseLayout from '../layout/BaseLayout.vue'; </script>
+<script setup>
+import BaseLayout from '../layout/BaseLayout.vue';
+ </script>
 <script>export default {
     data() {
         return {
@@ -78,15 +75,11 @@
     if (response.ok) {
       const data = await response.json();
       alert('Vestido añadido con éxito');
-      console.log('Response data:', data); // Verifica la respuesta del servidor
+      console.log('Response data:', data); 
       this.resetForm();
-    } else {
-      console.error('Error en la respuesta del servidor:', response.statusText);
-      alert('Error al añadir el vestido');
-    }
+    } 
   } catch (error) {
     console.error('Error en la solicitud fetch:', error);
-    alert('Error al añadir el vestido');
   }
 },
 resetForm() {

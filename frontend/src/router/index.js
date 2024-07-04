@@ -31,6 +31,11 @@ const router = createRouter({
       name: 'adding',
       component: () => import('../views/AddingDress.vue'),
     },
+    {
+      path: '/selling',
+      name: 'selling',
+      component: () => import('../views/SellView.vue'),
+    },
   ],
 });
 export function Logged() {

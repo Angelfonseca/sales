@@ -1,50 +1,196 @@
 <template>
-  <div class="evento" :key="dress.id">
-    <div class="imagen">
-      <img :src="dress.image" alt="Imagen del vestido">
+  <div class="dress-card">
+    <div class="image-container">
+      <img :src="dress.pictureUrl" :alt="dress.name" class="dress-image">
     </div>
-    <div class="contenido">
-      <h3 class="titulo">{{ dress.name }}</h3>
-      <p class="descripcion">{{ dress.price }}</p>
-
+    <div class="dress-info">
+      <h2 class="dress-name">{{ dress.name }}</h2>
+      <ul>
+        <li><span>Talla:</span> {{ dress.size }}</li>
+        <li><span>Color:</span> {{ dress.color }}</li>
+        <li><span>Precio:</span> {{ dress.price }}</li>
+        <li><span>Disponibilidad:</span> <span :class="dress.available ? 'available' : 'not-available'">{{
+          dress.available ? 'Disponible' : 'No disponible' }}</span></li>
+        <li v-if="dress.cleaning === true"><span class="dry-cleaning-text">En tintorería</span></li>
+      </ul>
+      <button @click="markAsInDryCleaning" class="dry-cleaning-button"
+        v-if="user && (user.role === 'admin' || user.role === 'user')">
+        {{ dress.cleaning ? 'Volver a disponibilidad' : 'Marcar en tintorería' }}
+      </button> <br>
+      <button @click="deleteDress" class="delete-button"
+        v-if="user && (user.role === 'admin' || user.role === 'admin')">Eliminar vestido</button>
     </div>
   </div>
 </template>
-
 <script setup>
 import { defineProps } from 'vue';
+import axios from 'axios';
 
-// Definimos las propiedades que espera recibir el componente DressCard
+const user = JSON.parse(localStorage.getItem('user'));
 const props = defineProps({
-  dress: {
-    type: Object,
-    required: true
-  }
+  dress: Object
 });
+
+const markAsInDryCleaning = async () => {
+  try {
+    const response = await axios.put(`http://localhost:3000/api/dresses/${props.dress.name}`, {
+      cleaning: !props.dress.cleaning
+    }, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`
+      }
+    });
+    console.log('Vestido marcado como en tintorería:', response.data);
+    props.dress.cleaning = !props.dress.cleaning;
+  } catch (error) {
+    console.error('Error al marcar el vestido como en tintorería:', error);
+  }
+};
+
+const deleteDress = async () => {
+  try {
+    const response = await axios.delete(`http://localhost:3000/api/dresses/${props.dress.name}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`
+      }
+    });
+    console.log('Vestido eliminado:', response.data);
+    // Recarga la página después de eliminar el vestido
+    window.location.reload();
+  } catch (error) {
+    console.error('Error al eliminar el vestido:', error);
+  }
+};
 </script>
 
 <style scoped>
-.evento {
+.dress-card {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 20px;
   display: flex;
   flex-direction: column;
-  border: 1px solid #ccc;
-  border-radius: 8px;
+  justify-content: space-between;
+  height: 100%;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   overflow: hidden;
-  cursor: pointer;
+  /* Evita desbordamientos visuales */
 }
 
-.imagen img {
+.image-container {
   width: 100%;
-  height: auto;
+  height: 0;
+  padding-top: 80%;
+  /* Ajusta según la proporción deseada */
+  position: relative;
+  overflow: hidden;
+  border-radius: 10px 10px 0 0;
 }
 
-.contenido {
-  padding: 16px;
+.dress-image {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  /* Cambia 'cover' a 'contain' */
+  top: 0;
+  left: 0;
+  transition: opacity 0.3s ease;
 }
 
-.titulo {
+.dress-info {
+  margin-top: 20px;
+  padding: 20px;
+  background-color: #f7f7f7;
+  border-radius: 0 0 10px 10px;
+}
+
+.dress-info ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.dress-info li {
+  margin-bottom: 10px;
+}
+
+.dress-info li span {
   font-weight: bold;
-  font-size: 1.15rem;
-  /* Ajusta el tamaño del título según sea necesario */
+  margin-right: 10px;
+}
+
+.dress-name {
+  font-size: 24px;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 10px;
+  color: #000;
+}
+
+.delete-button {
+  background-color: #FF0000;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 10px;
+  text-align: center;
+}
+
+.delete-button:hover {
+  background-color: #CC0000;
+}
+
+.text-green-500 {
+  color: #34C759;
+}
+
+.text-red-500 {
+  color: #FF3737;
+}
+
+.available {
+  text-decoration: underline;
+  color: #34C759;
+}
+
+.not-available {
+  text-decoration: underline;
+  color: #FF3737;
+}
+
+.dry-cleaning-button {
+  background-color: #FFC107;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 10px;
+  text-align: center;
+}
+
+.dry-cleaning-button:hover {
+  background-color: #FFA07A;
+}
+
+.dry-cleaning-button.active {
+  background-color: #34C759;
+  color: white;
+}
+
+
+.text-red-500 {
+  color: #FF3737;
+}
+
+.dry-cleaning-text {
+  font-weight: bold;
+  color: #FF3737;
 }
 </style>
