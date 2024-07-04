@@ -1,7 +1,7 @@
 import dressService from '../services/dresses.service';
 import { Dress } from '../interfaces/dresses.interface';
 import { Request, Response } from 'express';
-import { handleHttp} from '../utils/error.handle';
+import { handleHttp } from '../utils/error.handle';
 import path from 'path';
 
 const createDress = async (req: Request, res: Response): Promise<Response> => {
@@ -9,7 +9,7 @@ const createDress = async (req: Request, res: Response): Promise<Response> => {
         const dressData = { ...req.body };
 
         if (req.file && req.file.filename) {
-            dressData.picture = path.join('/uploads', req.file.filename);
+            dressData.picture = path.join(req.file.filename);
         }
 
         const createdDress = await dressService.createDress(dressData);
@@ -88,5 +88,26 @@ const getDressesByCategory = async (req: Request, res: Response) => {
         res.status(500).json({ message: error.message });
     }
 }
+const changeDressAvailability = async (req: Request, res: Response) => {
+    try {
+        const name: string = req.params.name;
+        const available: boolean = req.body.available;
+        const updatedDress = await dressService.changeDressAvailability(name, available);
+        res.status(200).json({ data: updatedDress, message: 'Dress availability updated' });
+    } catch (error: any) {
+        res.status(500).json({ message: error.message });
+    }
+}
+const changeCleaning = async (req: Request, res: Response) => {
+    try {
+        const name: string = req.params.name;
+        const cleaning: boolean = req.body.cleaning;
+        const updatedDress = await dressService.changeCleaning(name, cleaning);
+        res.status(200).json({ data: updatedDress, message: 'Dress cleaning updated' });
+    } catch (error: any) {
+        res.status(500).json({ message: error.message });
+    }
+};
 
-export default { createDress, getDresses, getDressById, getDressByName, updateDressByName, deleteDress, getDressesByCategory};
+
+export default { createDress, getDresses, getDressById, getDressByName, updateDressByName, deleteDress, getDressesByCategory, changeDressAvailability, changeCleaning };

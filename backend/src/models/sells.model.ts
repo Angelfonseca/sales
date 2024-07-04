@@ -7,7 +7,10 @@ const sellSchema = new Schema<Sell>({
     loanDate: { type: Date, required: true },
     recipient: { type: String, required: true },
     returnDate: { type: Date},
-    folio: { type: Number, required: true, incrementing: true},
+    returned: { type: Boolean, default: false },
+    phone: { type: Number, required: true },
+    address: { type: String, required: true },
+    receivedfor: { type: Schema.Types.ObjectId, ref: 'User', required: false, default: null}
 });
 
 const SellModel = model<Sell>('Sell', sellSchema);

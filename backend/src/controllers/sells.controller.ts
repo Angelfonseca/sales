@@ -6,13 +6,13 @@ import { handleHttp } from "../utils/error.handle";
 const createSell = async (req: Request, res: Response) => {
     try {
         const sellData: Sell = req.body;
-        const userId = req.params.id;
-        await sellsService.createSell(sellData, userId);
+        await sellsService.createSell(sellData);
         res.status(201).json({ message: 'Sell created' });
     } catch (error: any) {
-        handleHttp(res, 500, error.message);
+        console.error('Error creating sell:', error);
+        handleHttp(res, 500, error.message); // Asumiendo que `handleHttp` maneja respuestas HTTP adecuadamente
     }
-}
+};
 
 const getSells = async (req: Request, res: Response) => {
     try {
@@ -103,4 +103,25 @@ const returnSell = async (req: Request, res: Response) => {
     }
 }
 
-export default { createSell, getSells, getSellById, updateSell, deleteSell, getSellsByUser, getReturnedSells, getLoanedSells, getAvailableSells, returnSell };
+const recieveDress = async (req: Request, res: Response) => {
+    try {
+      const id: string = req.params.id;
+      const userId = req.body.username;
+      const response = await sellsService.recieveDress(id, userId);
+      res.status(200).json(response);
+    } catch (error: any) {
+      handleHttp(res, 500, error.message);
+    }
+  };
+
+const getSellsbyDate = async (req: Request, res: Response) => {
+    try {
+        const init: Date = req.body.init;
+        const end: Date = req.body.end;
+        const sells = await sellsService.filterSellsbyDate(init, end);
+        res.status(200).json({ data: sells });
+    } catch (error: any) {
+        handleHttp(res, 500, error.message);
+    }
+}
+export default { createSell, getSells, getSellById, updateSell, deleteSell, getSellsByUser, getReturnedSells, getLoanedSells, getAvailableSells, returnSell, recieveDress, getSellsbyDate };

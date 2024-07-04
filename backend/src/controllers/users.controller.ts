@@ -17,7 +17,7 @@ const createUser = async (req: Request, res: Response) => {
 const getUsers = async (req: Request, res: Response) => {
     try {
         const users = await userServices.getUsers();
-        res.status(200).json({ data: users });
+        return users;
     } catch (error: any) {
         handleHttp(res, 500, error.message);
     }
@@ -44,11 +44,21 @@ const getUserById = async (req: Request, res: Response) => {
     try {
         const id: string = req.params.id;
         const user = await userServices.getUserById(id);
-        res.status(200).json({ data: user });
+        res.status(200).json({ user });
     } catch (error: any) {
         handleHttp(res, 500, error.message);
     }
-};
+}
+
+const getUserByUsername = async (req: Request, res: Response) => {
+    try {
+        const username: string = req.params.username;
+        const user = await userServices.getUserByUsername(username);
+        res.status(200).json({ user });
+    } catch (error: any) {
+        handleHttp(res, 500, error.message);
+    }
+}
 
 const updateUser = async (req: Request, res: Response) => {
     try {
@@ -82,4 +92,4 @@ const addSell = async (req: Request, res: Response) => {
     }
 };
 
-export default { createUser, getUsers, getUserById, updateUser, deleteUser, addSell, login }
+export default { createUser, getUsers, getUserById, updateUser, deleteUser, addSell, login, getUserByUsername }

@@ -10,6 +10,7 @@ const dressSchema = new Schema<Dress>({
     picture: { type: String, required: true },
     category: { type: String, required: true },
     available: { type: Boolean, required: true },
+    cleaning: { type: Boolean, required: true, default: false},
 });
 
 const DressModel = model<Dress>('Dress', dressSchema);

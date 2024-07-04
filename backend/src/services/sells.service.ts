@@ -1,39 +1,32 @@
 import sellsModel from '../models/sells.model';
 import {Sell} from '../interfaces/sells.interface';
 import usersService from './users.service';
+import dressModel from '../models/dresses.model';
+import dressesService from './dresses.service';
+import mongoose from 'mongoose';
+import userModel from '../models/users.model';
+import { error } from 'console';
 
-const createSell = async (sell: Sell, id: string) => {
+const createSell = async (sellData: Sell) => {
     try {
-
-        const existingSell = await sellsModel.findOne({ folio: sell.folio });
-
-        if (existingSell) {
-            throw new Error('El folio ya está en uso.');
+        const dress = await dressModel.findById(sellData.dress);
+        if (!dress) {
+            throw new Error('Dress not found');
         }
-
-        // Obtener el total de documentos en la colección de ventas
-        const totalSells = await sellsModel.countDocuments();
-
-        // Incrementar el total en 1 para obtener el nuevo valor del folio
-        const newFolio = totalSells + 1;
-
-        // Asignar el nuevo folio al objeto de venta
-        sell.folio = newFolio;
-
-        // Crear el nuevo documento de venta
-        const response = await sellsModel.create(sell);
-
-        if (response && response._id) {
-            // Aquí puedes realizar otras operaciones después de crear el documento de venta
+        if (!dress.available) {
+            throw new Error('Dress not available');
         }
-
-        // Retornar el nuevo documento de venta creado
+        const dressResult = await dressesService.getDressByName(dress.name);
+        const dressid = dressResult?._id;
+        await dressesService.changeDressAvailability(dress.name, false);
+        const response = await sellsModel.create(sellData);
         return response;
     } catch (error: any) {
         // Manejar cualquier error que pueda ocurrir durante el proceso
         throw new Error(error.message);
     }
 };
+  
 
 const getSells = async () => {
     return sellsModel.find();
@@ -73,4 +66,44 @@ const getAvailableSells = async (init: Date, end: Date) => {
     const fin = end;
     return sellsModel.find({loanDate: {$gte: inicio, $lte: fin}});
 }   
-export default { createSell, getAvailableSells, getSells, getSellById, updateSell, deleteSell, getSellsByUser, getReturnedSells, getLoanedSells, returnSell};
+
+const recieveDress = async (id: string, userid: string) => {
+  try {
+    const sell = await sellsModel.findById(id);
+    if (!sell) {
+      throw new Error('Sell not found');
+    }
+    const user = await usersService.getUserByUsername(userid);
+    if (!user) {
+      throw new Error('User not found');
+    }
+    const dress = await dressModel.findById(sell.dress);
+    if (!dress) {
+      throw new Error('Dress not found');
+    }
+    if (sell.returned) {
+      throw new Error(' El vestido ya ha sido devuelto');
+    }
+    const dressResult = await dressesService.getDressByName(dress.name);
+    const dressid = dressResult?._id;
+    await dressesService.changeDressAvailability(dress.name, true);
+    const response = await sellsModel.findByIdAndUpdate(id, { returned: true, receivedfor: user._id }, { new: true });
+    if (!response) {
+      throw new Error('Error updating sell');
+    }
+    return response;
+  } catch (error: any) {
+    return {
+      success: false,
+      message: error.message
+    };
+  }
+};
+
+
+const filterSellsbyDate = async (init: Date, end: Date) => {
+    const inicio = init;
+    const fin = end;
+    return sellsModel.find({loanDate: {$gte: inicio, $lte: fin}});
+}
+export default { createSell, getAvailableSells, getSells, getSellById, updateSell, deleteSell, getSellsByUser, getReturnedSells, getLoanedSells, returnSell, recieveDress , filterSellsbyDate};

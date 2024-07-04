@@ -9,6 +9,7 @@ export interface Dress {
     picture: string;
     category: string;
     available: boolean;
+    cleaning: boolean;
 }
 
 export type DressDocument = Dress & Document;

@@ -10,5 +10,8 @@ router.get('/:id', dressesController.getDressById);
 router.get('/name/:name', dressesController.getDressByName);
 router.put('/:name', dressesController.updateDressByName);
 router.delete('/:name', dressesController.deleteDress);
+router.get('/category/:category', dressesController.getDressesByCategory);
+router.put('/availability/:name', dressesController.changeDressAvailability);
+router.put('/cleaning/:name', dressesController.changeCleaning);
 
 export default router;
