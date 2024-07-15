@@ -19,7 +19,7 @@
           </li>
           <li class="opcion-nav" v-if="user && (user.role === 'admin' || user.role === 'user') && route.path !== '/adding'">
             <router-link to="/adding" class="nav-link">
-              <i class="fas fa-plus"></i> Agregar vestido
+              <i class="fas fa-plus"></i> Agregar
             </router-link>
           </li>
           <li class="opcion-nav" v-if="route.path !== '/about'">
@@ -30,6 +30,11 @@
           <li class="opcion-nav" v-if="user && (user.role === 'admin' || user.role === 'user') && route.path !== '/selling'">
             <router-link to="/selling" class="nav-link">
               <i class="fas fa-envelope"></i> Rentar
+            </router-link>
+          </li>
+          <li class="opcion-nav" v-if="user && (user.role === 'admin') && route.path !== '/admin'">
+            <router-link to="/admin" class="nav-link">
+              <i class="fas fa-envelope"></i> Administración
             </router-link>
           </li>
           <li class="opcion-nav" v-if="user">

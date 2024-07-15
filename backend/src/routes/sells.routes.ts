@@ -1,18 +1,21 @@
 import sellsController from "../controllers/sells.controller";
 import router from "express";
+import ensureAuth from "../middlewares/auth.middleware";
 
 const routes = router();
 
-routes.get('/', sellsController.getSells);
-routes.get('/:id', sellsController.getSellById);
-routes.post('/', sellsController.createSell);
-routes.put('/:id', sellsController.updateSell);
-routes.delete('/:id', sellsController.deleteSell);
-routes.get('/user/:id', sellsController.getSellsByUser);
-routes.get('/returned', sellsController.getReturnedSells);
-routes.get('/loaned', sellsController.getLoanedSells);
-routes.get('/available', sellsController.getAvailableSells);
-routes.put('/return/:id', sellsController.recieveDress);
-routes.post('/filter', sellsController.getSellsbyDate);
+routes.get('/', ensureAuth,sellsController.getSells);
+routes.get('/:id', ensureAuth,sellsController.getSellById);
+routes.post('/', ensureAuth,sellsController.createSell);
+routes.put('/:id', ensureAuth,sellsController.updateSell);
+routes.delete('/:id', ensureAuth,sellsController.deleteSell);
+routes.get('/user/:id', ensureAuth,sellsController.getSellsByUser);
+routes.get('/returned', ensureAuth,sellsController.getReturnedSells);
+routes.get('/loaned', ensureAuth,sellsController.getLoanedSells);
+routes.get('/available', ensureAuth,sellsController.getAvailableSells);
+routes.put('/return/:id', ensureAuth,sellsController.recieveDress);
+routes.post('/filter', ensureAuth,sellsController.getSellsbyDate);
+routes.get('/actual/:id', sellsController.getActualDress);
+routes.post('/month', sellsController.getSellsByMonth);
 
 export default routes;

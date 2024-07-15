@@ -1,24 +1,11 @@
-<script setup>
-import { ref } from 'vue';
-import BaseLayout from '../layout/BaseLayout.vue';
-
-const email = ref('contacto@tiendarenta.com');
-const phone = ref('(+52) 449 469 7204');
-
-const copyToClipboard = (text) => {
-  navigator.clipboard.writeText(text).then(() => {
-    alert(`${text} copiado al portapapeles`);
-  });
-};
-</script>
-
 <template>
   <BaseLayout>
     <main class="container mx-auto py-10 px-4">
       <h1 class="text-4xl font-bold text-center mb-8">Contáctanos</h1>
       <div class="bg-white p-8 rounded-lg shadow-lg max-w-3xl mx-auto">
         <p class="text-lg mb-6 text-justify">
-          Si tienes alguna pregunta o necesitas más información sobre nuestros vestidos, no dudes en contactarnos. Estamos aquí para ayudarte a encontrar el vestido perfecto para tu ocasión especial.
+          Si tienes alguna pregunta o necesitas más información sobre nuestros vestidos, no dudes en contactarnos.
+          Estamos aquí para ayudarte a encontrar el vestido perfecto para tu ocasión especial.
         </p>
         <div class="mb-6">
           <h2 class="text-2xl font-semibold mb-2">Dirección</h2>
@@ -34,25 +21,46 @@ const copyToClipboard = (text) => {
         </div>
         <div class="mb-6">
           <h2 class="text-2xl font-semibold mb-2">Horario de Atención</h2>
-          <p>Lunes a Viernes: 9:00 AM - 6:00 PM</p>
-          <p>Sábados: 10:00 AM - 4:00 PM</p>
+          <p>Lunes a Viernes: 11:00 AM - 3:00 PM / 6:00 PM - 8:00 PM</p>
+          <p>Sábados: 11:30 AM - 3:30 PM</p>
           <p>Domingos: Cerrado</p>
         </div>
-        <div>
-          <h2 class="text-2xl font-semibold mb-2">Ubicación</h2>
-          <iframe
-            class="w-full h-64"
-            src="https://www.google.com.mx/maps/embed?pb=!1m18!1m12!1m3!1d3675.3046012107656!2d-102.278548!3d22.1493919!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8429e3e7dc71b3f7%3A0x187323d350b75534!2sCitronella!5e0!3m2!1ses-419!2smx!4v1687371252456!5m2!1ses-419!2smx"
-            allowfullscreen=""
-            loading="lazy"
-            referrerpolicy="no-referrer-when-downgrade"
-          ></iframe>
+        <div class="mb-6">
+          <h2 class="text-2xl font-semibold mb-2">Redes Sociales</h2>
+          <div class="mb-2 flex items-center">
+            <img src="/facebook-icon.png" alt="Facebook" class="w-6 h-6 mr-2">
+            <a href="https://www.facebook.com/profile.php?id=100063739113428&mibextid=LQQJ4d"
+              target="_blank">Facebook</a>
+          </div>
+          <div class="mb-2 flex items-center">
+            <img src="/instagram-icon.png" alt="Instagram" class="w-6 h-6 mr-2">
+            <a href="https://www.instagram.com/citronella_2020?igsh=MXJ2bjczMm1qeG1tZA==" target="_blank">Instagram</a>
+          </div>
         </div>
+      <div>
+        <h2 class="text-2xl font-semibold mb-2">Ubicación</h2>
+        <iframe class="w-full h-64"
+          src="https://www.google.com.mx/maps/embed?pb=!1m18!1m12!1m3!1d3675.3046012107656!2d-102.278548!3d22.1493919!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8429e3e7dc71b3f7%3A0x187323d350b75534!2sCitronella!5e0!3m2!1ses-419!2smx!4v1687371252456!5m2!1ses-419!2smx"
+          allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+      </div>
       </div>
     </main>
   </BaseLayout>
 </template>
 
+<script setup>
+import { ref } from 'vue';
+import BaseLayout from '../layout/BaseLayout.vue';
+
+const email = ref('contacto@tiendarenta.com');
+const phone = ref('(+52) 449 469 7204');
+
+const copyToClipboard = (text) => {
+  navigator.clipboard.writeText(text).then(() => {
+    alert(`${text} copiado al portapapeles`);
+  });
+};
+</script>
 <style scoped>
 .container {
   max-width: 1200px;

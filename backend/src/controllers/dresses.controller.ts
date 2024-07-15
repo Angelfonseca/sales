@@ -34,7 +34,7 @@ const getDressById = async (req: Request, res: Response) => {
     try {
         const id: string = req.params.id;
         const dress = await dressService.getDressById(id);
-        res.status(200).json({ data: dress });
+        res.status(200).json({  dress });
     } catch (error: any) {
         res.status(500).json({ message: error.message });
     }

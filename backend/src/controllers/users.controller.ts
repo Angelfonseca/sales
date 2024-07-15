@@ -17,7 +17,7 @@ const createUser = async (req: Request, res: Response) => {
 const getUsers = async (req: Request, res: Response) => {
     try {
         const users = await userServices.getUsers();
-        return users;
+        return res.status(200).json({ users });
     } catch (error: any) {
         handleHttp(res, 500, error.message);
     }

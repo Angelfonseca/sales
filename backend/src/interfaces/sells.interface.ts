@@ -10,6 +10,7 @@ export interface Sell extends Document {
     loanDate: Date;
     returnDate: Date;
     returned: boolean;
+    price: number;
     phone: number;
     address: string;
     receivedfor: User;

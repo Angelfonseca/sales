@@ -51,7 +51,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import BaseLayout from '../layout/BaseLayout.vue';
-import axios from 'axios';
+import apiService from '../../services/api.service'; // Asegúrate de importar tu servicio API
 import moment from 'moment';
 
 const user = JSON.parse(localStorage.getItem('user'));
@@ -59,8 +59,8 @@ const availableDresses = ref([]);
 const suggestions = ref([]);
 const form = ref({
   dress: '',
-  loanDate: moment().format('YYYY-MM-DD'),
-  returnDate: moment().add(1, 'days').format('YYYY-MM-DD'),
+  loanDate: moment().format('YYYY-MM-DD'), // Set current date
+  returnDate: moment().format('YYYY-MM-DD'), // Set current date
   recipient: '',
   phone: '',
   address: '',
@@ -70,12 +70,12 @@ const errorMessage = ref('');
 
 const fetchDresses = async () => {
   try {
-    const response = await axios.get('http://localhost:3000/api/dresses', {
+    const response = await apiService.get('/dresses', {
       headers: {
         Authorization: `Bearer ${user.token}`,
       },
     });
-    availableDresses.value = response.data.data.filter(dress => dress.available); // Filtrar solo los vestidos disponibles
+    availableDresses.value = response.data.filter(dress => dress.available); // Filtrar solo los vestidos disponibles
   } catch (error) {
     console.error('Error fetching dresses:', error);
     errorMessage.value = 'Error al cargar los vestidos';
@@ -111,7 +111,8 @@ const submitForm = async () => {
   }
   try {
     const currentUser = JSON.parse(localStorage.getItem('user'));
-    const response = await axios.post('http://localhost:3000/api/sells', {
+    const dressPrice = availableDresses.value.find(dress => dress._id === form.value.selectedDressId).price;
+    const data = {
       user: currentUser._id,
       dress: form.value.selectedDressId,
       recipient: form.value.recipient,
@@ -119,16 +120,14 @@ const submitForm = async () => {
       returnDate: form.value.returnDate,
       phone: form.value.phone,
       address: form.value.address,
-    }, {
-      headers: {
-        Authorization: `Bearer ${currentUser.token}`,
-      },
-    });
+      price: dressPrice,
+    } 
+    const response = await apiService.post('/sells', data);
 
     console.log('Form submitted successfully:', response.data);
 
     // Cambiar disponibilidad del vestido
-    await axios.put(`http://localhost:3000/api/dresses/availability/${form.value.dress}`, {
+    await apiService.put(`/dresses/availability/${form.value.dress}`, {
       available: false, // Cambiar a false porque el vestido se ha rentado
     }, {
       headers: {
@@ -140,7 +139,7 @@ const submitForm = async () => {
     errorMessage.value = '';
     form.value.dress = '';
     form.value.loanDate = moment().format('YYYY-MM-DD');
-    form.value.returnDate = moment().add(1, 'days').format('YYYY-MM-DD');
+    form.value.returnDate = moment().format('YYYY-MM-DD');
     form.value.recipient = '';
     form.value.phone = '';
     form.value.address = '';

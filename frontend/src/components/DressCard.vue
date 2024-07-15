@@ -8,37 +8,62 @@
       <ul>
         <li><span>Talla:</span> {{ dress.size }}</li>
         <li><span>Color:</span> {{ dress.color }}</li>
-        <li><span>Precio:</span> {{ dress.price }}</li>
-        <li><span>Disponibilidad:</span> <span :class="dress.available ? 'available' : 'not-available'">{{
-          dress.available ? 'Disponible' : 'No disponible' }}</span></li>
+        <li><span>Precio:</span> {{ dress.price }} $</li>
+        <li>
+          <span>Disponibilidad:</span> 
+          <span :class="dress.available ? 'available' : 'not-available'">{{ dress.available ? 'Disponible' : 'No disponible' }}</span>
+        </li>
         <li v-if="dress.cleaning === true"><span class="dry-cleaning-text">En tintorería</span></li>
+        <li v-if="!dress.available && loanDate"><span>Apartado para día:</span> {{ loanDate }}</li>
       </ul>
       <button @click="markAsInDryCleaning" class="dry-cleaning-button"
         v-if="user && (user.role === 'admin' || user.role === 'user')">
         {{ dress.cleaning ? 'Volver a disponibilidad' : 'Marcar en tintorería' }}
       </button> <br>
       <button @click="deleteDress" class="delete-button"
-        v-if="user && (user.role === 'admin' || user.role === 'admin')">Eliminar vestido</button>
+        v-if="user && user.role === 'admin'">Eliminar vestido</button>
     </div>
   </div>
 </template>
+
 <script setup>
-import { defineProps } from 'vue';
-import axios from 'axios';
+import { ref, onMounted, watch } from 'vue';
+import apiService from '../../services/api.service';
 
 const user = JSON.parse(localStorage.getItem('user'));
 const props = defineProps({
   dress: Object
 });
 
+const loanDate = ref('');
+
+const getLoanDate = async () => {
+  try {
+    const response = await apiService.get(`/sells/actual/${props.dress._id}`);
+    loanDate.value = new Date(response.sell.returnDate);
+    loanDate.value.setDate(loanDate.value.getDate() + 1);
+    loanDate.value = loanDate.value.toLocaleDateString();
+  } catch (error) {
+    console.error('Error al obtener la fecha de préstamo:', error);
+  }
+};
+
+watch(() => props.dress.available, (newVal) => {
+  if (!newVal) {
+    getLoanDate();
+  }
+});
+
+onMounted(() => {
+  if (!props.dress.available) {
+    getLoanDate();
+  }
+});
+
 const markAsInDryCleaning = async () => {
   try {
-    const response = await axios.put(`http://localhost:3000/api/dresses/${props.dress.name}`, {
+    const response = await apiService.put(`/dresses/${props.dress.name}`, {
       cleaning: !props.dress.cleaning
-    }, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`
-      }
     });
     console.log('Vestido marcado como en tintorería:', response.data);
     props.dress.cleaning = !props.dress.cleaning;
@@ -49,11 +74,7 @@ const markAsInDryCleaning = async () => {
 
 const deleteDress = async () => {
   try {
-    const response = await axios.delete(`http://localhost:3000/api/dresses/${props.dress.name}`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`
-      }
-    });
+    const response = await apiService.delete(`/dresses/${props.dress.name}`);
     console.log('Vestido eliminado:', response.data);
     // Recarga la página después de eliminar el vestido
     window.location.reload();
@@ -62,6 +83,8 @@ const deleteDress = async () => {
   }
 };
 </script>
+
+
 
 <style scoped>
 .dress-card {

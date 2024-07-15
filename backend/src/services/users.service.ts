@@ -1,5 +1,8 @@
 import userModel from '../models/users.model';
 import { User } from '../interfaces/users.interface';
+const bcrypt = require('bcrypt');
+const SALT_WORK_FACTOR = 10;
+
 
 const createUser = async (user: User) => {
     return userModel.create(user);
@@ -19,9 +22,16 @@ const getUserByUsername = async (username: string) => {
     }
     return user;
   }
-const updateUser = async (id: string, userData: User) => {
+  const updateUser = async (id: string, userData: Partial<User>) => {
+    // Verifica si se está actualizando la contraseña
+    if (userData.password) {
+      // Hashea la nueva contraseña antes de guardarla
+      const salt = await bcrypt.genSalt(SALT_WORK_FACTOR);
+      const hash = await bcrypt.hash(userData.password, salt);
+      userData.password = hash;
+    }
     return userModel.findByIdAndUpdate(id, userData, { new: true });
-}
+  };
 const login = async (credentials: any) => {
     let user = await userModel.findOne({ username: credentials.username });
     console.log('Checking UserModel:', user);

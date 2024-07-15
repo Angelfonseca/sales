@@ -36,6 +36,16 @@ const router = createRouter({
       name: 'selling',
       component: () => import('../views/SellView.vue'),
     },
+    {
+      path: '/admin',
+      name: 'admin',
+      component: () => import('../views/AdminView.vue'),
+    },
+    {
+      path: '/jewelry',
+      name: 'jewelry',
+      component: () => import('../views/JewerlyView.vue'),
+    }
   ],
 });
 export function Logged() {

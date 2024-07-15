@@ -4,6 +4,9 @@ import cors from 'cors';
 import usersRoutes from './routes/users.routes';
 import sellsRoutes from './routes/sells.routes';
 import dressesRoutes from './routes/dresses.routes';
+import blackRoutes from './routes/blacklist.routes';
+import jewelryRoutes from './routes/jewerly.routes';
+import selljewerlyRoutes from './routes/selljewerly.routes';  
 import 'dotenv/config';
 
 
@@ -16,6 +19,9 @@ app.use('/', express.static('public'));
 app.use('/api/users', usersRoutes);
 app.use('/api/sells', sellsRoutes);
 app.use('/api/dresses', dressesRoutes);
+app.use('/api/blacklist', blackRoutes);
+app.use('/api/jewerly', jewelryRoutes);
+app.use('/api/selljewerly', selljewerlyRoutes);
 
 
 

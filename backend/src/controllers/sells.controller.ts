@@ -124,4 +124,25 @@ const getSellsbyDate = async (req: Request, res: Response) => {
         handleHttp(res, 500, error.message);
     }
 }
-export default { createSell, getSells, getSellById, updateSell, deleteSell, getSellsByUser, getReturnedSells, getLoanedSells, getAvailableSells, returnSell, recieveDress, getSellsbyDate };
+const getActualDress = async (req: Request, res: Response) => {
+    try {
+        const dressid = req.params.id;
+        const sell = await sellsService.getActualDress(dressid);
+        res.status(200).json({ sell });
+    } catch (error: any) {
+        handleHttp(res, 500, error.message);
+    }
+}
+const getSellsByMonth = async (req: Request, res: Response) => {
+    try {
+      const month = new Date(req.body.month);
+      if (isNaN(month.getTime())) {
+        throw new Error('Invalid month format');
+      }
+      const totalSells = await sellsService.getTotalSellsByMonth(month);
+      res.status(200).json({ totalSells });
+    } catch (error: any) {
+      handleHttp(res, 500, error.message);
+    }
+  };
+export default { createSell, getSells, getSellById, updateSell, deleteSell, getSellsByUser, getReturnedSells, getLoanedSells, getAvailableSells, returnSell, recieveDress, getSellsbyDate, getActualDress, getSellsByMonth };

@@ -39,7 +39,7 @@ const deleteDress = async (name: string): Promise<Dress | null> => {
 
         // Delete the associated image file
         if (dress.picture) {
-            const picturePath = path.join(__dirname, '../../public', dress.picture);
+            const picturePath = path.join(__dirname, '../../public/uploads', dress.picture);
             fs.unlink(picturePath, (err) => {
                 if (err) {
                     console.error('Error deleting the image file:', err);

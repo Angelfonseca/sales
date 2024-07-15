@@ -18,7 +18,7 @@ const UserSchema: Schema<IUser & Document> = new Schema<IUser>({
     type: String,
     required: true
   },
-  sells: [{ type: Schema.Types.ObjectId, ref: 'Sell' }],
+  sells: { type: [{ type: Schema.Types.ObjectId, ref: 'Sell' }], default: [] },
   role: {
     type: String,
     required: true
