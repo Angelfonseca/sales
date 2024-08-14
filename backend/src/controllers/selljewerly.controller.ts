@@ -46,6 +46,15 @@ const deleteSellJewerly = async (req: Request, res: Response) => {
     }
 }
 
+const getSellJewerlyByMonth = async (req: Request, res: Response) => {
+    const month = new Date(req.body.month);
+    try {
+        const response = await selljewerlyService.getSellJewerlyByMonth(month);
+        res.status(200).json(response);
+    } catch (error: any) {
+        res.status(400).json({ message: error.message });
+    }
+}
 
 
 export default {
@@ -54,5 +63,6 @@ export default {
     getSellJewerlyById,
     updateSellJewerly,
     deleteSellJewerly,
+    getSellJewerlyByMonth
 
 }

@@ -35,13 +35,20 @@ const deleteSellJewerly = async (id: string) => {
 
 const getSellJewerlyByMonth = async (month: Date) => {
     const startOfMonth = new Date(month.getFullYear(), month.getMonth(), 1);
-    const endOfMonth = new Date(month.getFullYear(), month.getMonth() + 1, 1);
+    const endOfMonth = new Date(month.getFullYear(), month.getMonth() + 1, 1); // Primer día del mes siguiente
     try {
-        return selljewerlyModel.find({ sellDate: { $gte: startOfMonth, $lt: endOfMonth } });
+        const jewsells = await selljewerlyModel.find({ sellDate: { $gte: startOfMonth, $lt: endOfMonth } });
+        let totalSalesAmount = 0;
+        for (const sell of jewsells) {
+            totalSalesAmount += sell.price * sell.quantity;
+        }
+        return {totalSalesAmount, jewsells};
     } catch (error: any) {
         throw new Error(error.message);
     }
 }
+
+
 
 export default {
     createSellJewerly,

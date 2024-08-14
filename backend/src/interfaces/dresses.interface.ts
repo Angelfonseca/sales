@@ -10,6 +10,8 @@ export interface Dress {
     category: string;
     available: boolean;
     cleaning: boolean;
+    sold: boolean;
+    forSelling: boolean;
 }
 
 export type DressDocument = Dress & Document;

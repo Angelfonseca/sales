@@ -5,7 +5,7 @@ import  ensureAuth  from "../middlewares/auth.middleware";
 
 const router = Router();
 
-router.post('/create', ensureAuth,upload.single('image'),dressesController.createDress);
+router.post('/create', ensureAuth,upload.single('picture'),dressesController.createDress);
 router.get('/', dressesController.getDresses);
 router.get('/:id', dressesController.getDressById);
 router.get('/name/:name', dressesController.getDressByName);

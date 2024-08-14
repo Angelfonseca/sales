@@ -9,8 +9,10 @@ const dressSchema = new Schema<Dress>({
     price: { type: Number, required: true },
     picture: { type: String, required: true },
     category: { type: String, required: true },
-    available: { type: Boolean, required: true },
+    available: { type: Boolean, required: true, default: true},
     cleaning: { type: Boolean, required: true, default: false},
+    sold: { type: Boolean, required: true, default: false},
+    forSelling: { type: Boolean, required: true},
 });
 
 const DressModel = model<Dress>('Dress', dressSchema);

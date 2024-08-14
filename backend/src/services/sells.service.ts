@@ -144,7 +144,7 @@ const getTotalSellsByMonth = async (month: Date) => {
       }
     }
 
-    return totalSalesAmount;
+    return {totalSalesAmount, sells};
   } catch (error) {
     console.error('Error fetching sales:', error);
     throw new Error('Error fetching sales');
