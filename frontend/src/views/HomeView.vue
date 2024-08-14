@@ -6,13 +6,18 @@
       <!-- Filter section -->
       <div
         class="flex flex-col sm:flex-row flex-wrap justify-center mb-4 space-x-0 sm:space-x-4 space-y-4 sm:space-y-0">
-        <li class="opcion-nav" >
-            <router-link to="/jewelry" class="nav-link">
-              <i class="fas fa-envelope"></i> Joyería
-            </router-link>
-          </li>
+        <li class="opcion-nav">
+          <router-link to="/jewelry" class="nav-link">
+            <i class="fas fa-envelope"></i> Joyería
+          </router-link>
+        </li>
         <input type="search" v-model="searchQuery" placeholder="Buscar vestido"
           class="px-4 py-2 text-gray-700 w-full sm:w-auto">
+        <select v-model="selectedForSelling" class="px-4 py-2 text-gray-700 w-full sm:w-auto">
+          <option value="">Todos</option>
+          <option value="sale">Para Venta</option>
+          <option value="rent">Para Renta</option>
+        </select>
 
         <select v-model="selectedSize" class="px-4 py-2 text-gray-700 w-full sm:w-auto">
           <option value="">Todos los tamaños</option>
@@ -24,9 +29,9 @@
         </select>
 
         <select v-model="selectedColor" class="px-4 py-2 text-gray-700 w-full sm:w-auto">
-  <option value="">Todos los colores</option>
-  <option v-for="color in uniqueColors" :key="color" :value="color">{{ color }}</option>
-</select>
+          <option value="">Todos los colores</option>
+          <option v-for="color in uniqueColors" :key="color" :value="color">{{ color }}</option>
+        </select>
 
         <div class="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 w-full sm:w-auto">
           <input type="number" v-model.number="minPrice" placeholder="Precio mínimo" min="0"
@@ -72,6 +77,8 @@ const selectedColor = ref('');
 const minPrice = ref(null);
 const maxPrice = ref(null);
 const onlyAvailable = ref(false);
+const selectedForSelling = ref('');
+
 
 onMounted(async () => {
   try {
@@ -99,7 +106,14 @@ const filteredDresses = computed(() => {
     const matchesMinPrice = minPriceValue !== null ? dress.price >= minPriceValue : true;
     const matchesMaxPrice = maxPriceValue !== null ? dress.price <= maxPriceValue : true;
 
-    return matchesSearch && matchesSize && matchesColor && matchesMinPrice && matchesMaxPrice && matchesAvailability;
+    // New filter logic for selling or renting
+    const isForSale = dress.forSelling === true;
+    const isSold = dress.sold === true;
+    const matchesForSelling = selectedForSelling.value === ''
+      || (selectedForSelling.value === 'sale' && isForSale && !isSold)
+      || (selectedForSelling.value === 'rent' && !isForSale);
+
+    return matchesSearch && matchesSize && matchesColor && matchesMinPrice && matchesMaxPrice && matchesAvailability && matchesForSelling;
   });
 });
 
@@ -120,6 +134,7 @@ const filteredDresses = computed(() => {
     margin-left: 0;
   }
 }
+
 .opcion-nav {
   display: inline-block;
   margin: 0 10px;
@@ -131,6 +146,4 @@ const filteredDresses = computed(() => {
   cursor: pointer;
   transition: background-color 0.3s;
 }
-
-
 </style>

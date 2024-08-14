@@ -48,9 +48,23 @@ const router = createRouter({
     }
   ],
 });
+router.beforeEach((to, from, next) => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    const tokenData = JSON.parse(atob(token.split('.')[1]));
+    const expirationTime = tokenData.exp * 1000;
+    if (Date.now() > expirationTime) {
+      localStorage.removeItem('token');
+      if (to.path !== '/login') {
+        return next('/login');
+      }
+    }
+  }
+  next();
+});
 export function Logged() {
   const router = useRouter();
-  const isAuth = window.localStorage.getItem('credit-token');
+  const isAuth = window.localStorage.getItem('token');
 
   if (!isAuth) {
     router.push('/');

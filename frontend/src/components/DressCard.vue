@@ -15,6 +15,8 @@
         </li>
         <li v-if="dress.cleaning === true"><span class="dry-cleaning-text">En tintorería</span></li>
         <li v-if="!dress.available && loanDate"><span>Apartado para día:</span> {{ loanDate }}</li>
+        <li v-if="dress.forSelling === true"><span>Vestido para:</span> Venta</li>
+        <li v-else><span>Vestido para:</span> Renta</li>
       </ul>
       <button @click="markAsInDryCleaning" class="dry-cleaning-button"
         v-if="user && (user.role === 'admin' || user.role === 'user')">

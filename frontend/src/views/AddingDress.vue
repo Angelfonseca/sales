@@ -41,6 +41,13 @@
                       </div>
                   </div>
                   <div class="form-group">
+                      <label for="forSelling">Para:</label>
+                      <select id="forSelling" v-model="product.forSelling" required>
+                          <option value= true >Venta</option>
+                          <option value= false >Renta</option>
+                      </select>
+                  </div>
+                  <div class="form-group">
                       <label for="category">Categoría:</label>
                       <select id="category" v-model="product.category" required>
                           <option value="Fiesta">Fiesta</option>
@@ -101,6 +108,7 @@ const product = {
   price: 0,
   stock: 0,
   image: '',
+  picture: '',
   category: 'Necklaces' // Categoría por defecto para joyería
 };
 
@@ -114,7 +122,11 @@ const onFileChange = (event) => {
   const file = event.target.files[0];
   if (file && file.type.startsWith('image/')) {
       try {
-          product.image = file;
+          if (selectedType.value === 'dress') {
+              product.picture = file;  // Set picture for dress
+          } else {
+              product.image = file;    // Set image for jewelry
+          }
           imageUrl.value = URL.createObjectURL(file);
       } catch (error) {
           console.error('Error creating image URL:', error);
@@ -127,6 +139,7 @@ const onFileChange = (event) => {
   }
 };
 
+
 const submitProduct = async () => {
   const formData = new FormData();
   formData.append('name', product.name);
@@ -136,8 +149,9 @@ const submitProduct = async () => {
   if (selectedType.value === 'dress') {
       formData.append('size', product.size);
       formData.append('color', product.color.trim()); // Elimina espacios en el campo de color
-      formData.append('picture', product.image);
+      formData.append('picture', product.picture);
       formData.append('category', product.category);
+      formData.append('forSelling', product.forSelling);
   } else if (selectedType.value === 'jewelry') {
       formData.append('stock', product.stock);
       formData.append('image', product.image);
@@ -145,8 +159,10 @@ const submitProduct = async () => {
   }
 
   try {
-      const endpoint = selectedType.value === 'dress' ? '/dresses' : '/jewerly';
-      const { data } = await apiService.postData(endpoint, formData, {
+      console.log()
+      const endpoint = selectedType.value === 'dress' ? '/dresses/create' : '/jewerly';
+      console.log('data:', formData);
+      const { data } = await apiService.post(endpoint, formData, {
           headers: {
               Authorization: `Bearer ${token}`,
           },
@@ -160,15 +176,15 @@ const submitProduct = async () => {
 };
 
 const resetForm = () => {
-  product.name = '';
-  product.description = '';
-  product.price = 0;
-  product.stock = 0;
-  product.image = '';
-  product.category = 'Necklaces'; // Categoría por defecto para joyería
+  product.value.name = '';
+  product.value.description = '';
+  product.value.price = 0;
+  product.value.stock = 0;
+  product.value.picture = ''; // Reset 'picture' for dresses
+  product.value.image = '';   // Reset 'image' for jewelry
+  product.value.category = 'Necklaces'; // Default category for jewelry
   imageUrl.value = '';
 };
-
 </script>
 
 <style scoped>

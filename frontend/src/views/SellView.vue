@@ -57,6 +57,7 @@ import moment from 'moment';
 const user = JSON.parse(localStorage.getItem('user'));
 const availableDresses = ref([]);
 const suggestions = ref([]);
+const blacklist = ref([]);
 const form = ref({
   dress: '',
   loanDate: moment().format('YYYY-MM-DD'), // Set current date
@@ -70,18 +71,23 @@ const errorMessage = ref('');
 
 const fetchDresses = async () => {
   try {
-    const response = await apiService.get('/dresses', {
-      headers: {
-        Authorization: `Bearer ${user.token}`,
-      },
-    });
+    const response = await apiService.get('/dresses');
     availableDresses.value = response.data.filter(dress => dress.available); // Filtrar solo los vestidos disponibles
   } catch (error) {
     console.error('Error fetching dresses:', error);
     errorMessage.value = 'Error al cargar los vestidos';
   }
 };
-
+const fetchBlacklist = async () => {
+  try {
+    const response = await apiService.get('/blacklist');
+    blacklist.value = response;
+    console.log('Blacklist:', blacklist.value);
+  } catch (error) {
+    console.error('Error fetching blacklist:', error);
+    errorMessage.value = 'Error al cargar la lista negra';
+  }
+};
 const fetchSuggestions = () => {
   const search = form.value.dress.toLowerCase();
   if (search) {
@@ -98,17 +104,34 @@ const selectSuggestion = (suggestion) => {
   form.value.selectedDressId = suggestion._id;
   suggestions.value = [];
 };
+const isRecipientBlacklisted = computed(() => {
+  const blacklistArray = blacklist.value.map(item => ({ ...item })); // Desestructurar cada elemento
+  console.log('Blacklist:', blacklistArray);
+  return blacklistArray.some(buyer => buyer.name.toLowerCase() === form.value.recipient.toLowerCase());
+});
+
 
 const isPhoneValid = computed(() => {
   return /^[0-9]{10}$/.test(form.value.phone);
 });
 
 const submitForm = async () => {
+  console.log('Submitting form...');
+  console.log('Recipient:', form.value.recipient);
+  console.log('Blacklist:', blacklist.value);
+  
   if (!isPhoneValid.value) {
     errorMessage.value = 'Teléfono debe tener 10 dígitos';
     successMessage.value = '';
     return;
   }
+  
+  if (isRecipientBlacklisted.value) {
+    errorMessage.value = 'El destinatario está en la lista negra';
+    successMessage.value = '';
+    return;
+  }
+
   try {
     const currentUser = JSON.parse(localStorage.getItem('user'));
     const dressPrice = availableDresses.value.find(dress => dress._id === form.value.selectedDressId).price;
@@ -121,7 +144,7 @@ const submitForm = async () => {
       phone: form.value.phone,
       address: form.value.address,
       price: dressPrice,
-    } 
+    }
     const response = await apiService.post('/sells', data);
 
     console.log('Form submitted successfully:', response.data);
@@ -151,7 +174,11 @@ const submitForm = async () => {
   }
 };
 
-onMounted(fetchDresses);
+onMounted(() => {
+  fetchDresses();
+  fetchBlacklist();
+});
+
 </script>
 
 <style scoped>

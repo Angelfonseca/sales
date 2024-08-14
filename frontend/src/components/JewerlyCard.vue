@@ -66,8 +66,7 @@ const sellJewelry = async () => {
       sellDate: moment().format('YYYY-MM-DD'),
       price: props.jewelry.price,
       quantity: quantity.value
-    };
-    console.log('Datos de la venta:', sellData);
+    }
     const response = await apiService.post(`/selljewerly`, sellData);
     console.log('Joya vendida:', response.data);
     window.location.reload();

@@ -14,7 +14,8 @@
                 <div v-if="showUserForm" class="form-container">
                     <form @submit.prevent="handleUserFormSubmit">
                         <input type="text" v-model="userFormData.name" placeholder="Nombre" class="input">
-                        <input type="text" v-model="userFormData.username" placeholder="Nombre de usuario" class="input">
+                        <input type="text" v-model="userFormData.username" placeholder="Nombre de usuario"
+                            class="input">
                         <input type="password" v-model="userFormData.password" placeholder="Contraseña" class="input">
                         <select v-model="userFormData.role" class="input">
                             <option value="admin">Admin</option>
@@ -39,7 +40,8 @@
                     </select>
                     <div v-if="selectedUser">
                         <input type="text" v-model="selectedUser.name" placeholder="Nombre" class="input">
-                        <input type="text" v-model="selectedUser.username" placeholder="Nombre de usuario" class="input">
+                        <input type="text" v-model="selectedUser.username" placeholder="Nombre de usuario"
+                            class="input">
                         <input type="password" v-model="selectedUser.password" placeholder="Contraseña" class="input">
                         <select v-model="selectedUser.role" class="input">
                             <option value="admin">Admin</option>
@@ -59,13 +61,12 @@
                         <input type="month" id="monthYear" v-model="selectedMonthYear">
                         <button @click="handleSalesFormSubmit" class="btn">Consultar Rentas</button>
                     </div>
-                    <div class="sales-result">
-                        <p v-if="totalSales !== null">Total de Rentas: {{ totalSales }}</p>
-                        <p v-else>Total de Rentas: 0</p>
-                    </div>
                 </div>
-            </section>
 
+                <!-- AdminTable component to display sales data -->
+                <AdminTable v-if="showAdminTable" :sells="sells" :jewsells="jewsells"
+                    :totalSalesAmount="totalSalesAmount" :totalJewelrySalesAmount="totalJewelrySalesAmount" />
+            </section>
             <!-- Sección de Lista Negra de Compradores -->
             <section class="section">
                 <h2>Lista Negra</h2>
@@ -73,7 +74,8 @@
                 <div class="form-container">
                     <form @submit.prevent="addToBlacklist">
                         <input type="text" v-model="blacklistName" placeholder="Nombre" class="input"> <br> <br>
-                        <input type="text" v-model="blacklistDescription" placeholder="Descripción" class="input"> <br> <br>
+                        <input type="text" v-model="blacklistDescription" placeholder="Descripción" class="input"> <br>
+                        <br>
                         <button type="submit" class="btn submit">Añadir a la Lista Negra</button>
                     </form>
                 </div>
@@ -105,16 +107,20 @@
 <script>
 import BaseLayout from '../layout/BaseLayout.vue';
 import apiService from '../../services/api.service';
+import { api } from '../../services/api.config';
+import AdminTable from '../components/AdminTable.vue'
 
 export default {
     components: {
         BaseLayout,
+        AdminTable
     },
     data() {
         return {
             showUserForm: false,
             showDeleteForm: false,
             showModifyForm: false,
+            showAdminTable: false,
             userFormData: {
                 name: '',
                 username: '',
@@ -125,11 +131,14 @@ export default {
             selectedUserId: '',
             selectedUser: null,
             selectedMonth: '',
-            totalSales: null,
+            sells: [],
             blacklistName: '',
             blacklistDescription: '',
             blacklist: [],
             selectedMonthYear: '', // Variable para el mes y año seleccionados
+            jewsells: [],
+            totalSalesAmount: null,
+            totalJewelrySalesAmount: null
         };
     },
     methods: {
@@ -206,18 +215,36 @@ export default {
         handleSalesFormSubmit() {
             if (this.selectedMonthYear) {
                 const [year, month] = this.selectedMonthYear.split('-');
-                const firstDayOfMonth = new Date(`${year}-${month}-01`);
+                const firstDayOfMonth = new Date(`${year}-${month}-02`);
 
+                // Fetch dress rental sales
                 apiService.post('/sells/month', { month: firstDayOfMonth.toISOString().split('T')[0] })
                     .then(response => {
-                        this.totalSales = response.totalSells; // Actualiza el total de ventas desde la respuesta
+                        console.log('Ventas de vestidos:', response.totalSells.sells);  // Log para depuración
+                        this.sells = response.totalSells.sells;
+                        this.totalSalesAmount = response.totalSells.totalSalesAmount;
                     })
                     .catch(error => {
                         console.error('Error al obtener datos de ventas:', error);
-                        alert('Error al obtener datos de ventas. Por favor, inténtalo de nuevo más tarde.');
                     });
+
+                // Fetch jewelry sales
+                apiService.post('/selljewerly/month', { month: firstDayOfMonth.toISOString().split('T')[0] })
+                    .then(response => {
+                        console.log('Ventas de joyería:', response.jewsells);  // Accede directamente a las propiedades del objeto
+                        this.jewsells = response.jewsells;
+                        this.totalJewelrySalesAmount = response.totalSalesAmount;
+                    })
+                    .catch(error => {
+                        console.error('Error al obtener datos de ventas:', error);
+                    });
+
+
+                // Show the AdminTable component
+                this.showAdminTable = true;
             }
-        },
+        }
+        ,
         addToBlacklist() {
             if (this.blacklistName && this.blacklistDescription) {
                 apiService.post('/blacklist', { name: this.blacklistName, description: this.blacklistDescription })
@@ -338,7 +365,8 @@ export default {
     margin-top: 20px;
 }
 
-.blacklist-table th, .blacklist-table td {
+.blacklist-table th,
+.blacklist-table td {
     border: 1px solid #dee2e6;
     padding: 10px;
     text-align: left;

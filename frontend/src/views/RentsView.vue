@@ -115,7 +115,7 @@ const errorMessage = ref('');
 const startDate = ref('');
 const endDate = ref('');
 const currentPage = ref(1);
-const pageSize = ref(4);
+const pageSize = ref(10);
 const isMobile = ref(false);
 
 const checkIsMobile = () => {
@@ -262,8 +262,14 @@ const showError = (message) => {
 };
 
 const formatDate = (dateString) => {
-  const options = { year: 'numeric', month: 'long', day: 'numeric' };
-  return new Date(dateString).toLocaleDateString(undefined, options);
+  const date = new Date(dateString);
+  const options = { 
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric',
+    timeZone: 'UTC' // Especifica la zona horaria deseada
+  };
+  return date.toLocaleDateString(undefined, options);
 };
 
 const formatDateWithoutTime = (date) => {
@@ -322,11 +328,12 @@ const filteredLoans = computed(() => {
   const keyword = searchKeyword.value.toLowerCase();
   const filtered = loans.value.filter(loan => {
     const userDataName = loan.userData && loan.userData.user ? loan.userData.user.name.toLowerCase() : '';
-    const dressDataName = loan.dressData && loan.dressData.data ? loan.dressData.data.name.toLowerCase() : '';
+    const dressDataName = loan.dressData && loan.dressData.name ? loan.dressData.name.toLowerCase() : '';
 
     return userDataName.includes(keyword) ||
            dressDataName.includes(keyword) ||
-           loan.recipient.toLowerCase().includes(keyword);
+           loan.recipient.toLowerCase().includes(keyword); 
+           
   });
 
 
